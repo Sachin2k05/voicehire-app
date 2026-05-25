@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" 
+        content="width=device-width, initial-scale=1.0">
+  <title>VoiceHire — Voice-First Job Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" 
+        rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- TAP TO START OVERLAY -->
+  <div id="start-overlay">
+    <div class="start-pulse"></div>
+    <div class="start-content">
+      <div class="start-logo">Voice<span>Hire</span></div>
+      <div class="start-tagline">AI Career Companion for Everyone</div>
+      <button class="start-btn" id="start-btn">
+        <span>&#9654;</span> Tap to Start
+      </button>
+      <div class="start-hint">
+        Click anywhere or tap to begin your voice session
+      </div>
+    </div>
+  </div>
+
+  <!-- BROWSER COMPATIBILITY BANNER -->
+  <div id="browser-banner" class="browser-banner hidden">
+    ⚠️ For best voice experience, 
+    please use Google Chrome or Microsoft Edge
+  </div>
+
+  <!-- LANGUAGE SELECTION SCREEN -->
+  <div id="language-screen" class="language-screen">
+    <div class="lang-logo">
+      <span class="logo-white">Voice</span>
+      <span class="logo-gold">Hire</span>
+    </div>
+    <p class="lang-tagline">Your Voice. Your Career.</p>
+    <p class="lang-subtitle">Choose your language to begin</p>
+    <div class="lang-grid">
+
+      <div class="lang-card" data-lang="en-IN">
+        <span class="lang-flag">🇮🇳</span>
+        <div class="lang-info">
+          <div class="lang-name">English</div>
+          <div class="lang-native">English (India)</div>
+        </div>
+        <span class="lang-speaker">🔊</span>
+      </div>
+
+      <div class="lang-card" data-lang="ta-IN">
+        <span class="lang-flag">🇮🇳</span>
+        <div class="lang-info">
+          <div class="lang-name">தமிழ்</div>
+          <div class="lang-native">Tamil</div>
+        </div>
+        <span class="lang-speaker">🔊</span>
+      </div>
+
+      <div class="lang-card" data-lang="hi-IN">
+        <span class="lang-flag">🇮🇳</span>
+        <div class="lang-info">
+          <div class="lang-name">हिंदी</div>
+          <div class="lang-native">Hindi</div>
+        </div>
+        <span class="lang-speaker">🔊</span>
+      </div>
+
+      <div class="lang-card" data-lang="te-IN">
+        <span class="lang-flag">🇮🇳</span>
+        <div class="lang-info">
+          <div class="lang-name">తెలుగు</div>
+          <div class="lang-native">Telugu</div>
+        </div>
+        <span class="lang-speaker">🔊</span>
+      </div>
+
+    </div>
+    <div id="lang-hint-live" class="lang-hint" style="
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      letter-spacing: 0.05em;
+      min-height: 20px;
+    ">Say your language name or tap a card</div>
+  </div>
+
+  <!-- MAIN APP (hidden until language selected) -->
+  <div id="main-app" class="main-app hidden">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="app-logo">
+          <span class="logo-white">Voice</span>
+          <span class="logo-gold">Hire</span>
+        </div>
+      </div>
+      <div class="top-center">
+        <div id="status-banner" class="status-banner">
+          🔊  AI is speaking — mic activates automatically
+        </div>
+      </div>
+      <div class="top-right">
+        <div id="status-pill" class="status-pill speaking">
+          <div class="pill-dot"></div>
+          <span id="pill-text" data-i18n="pill_speaking">Speaking</span>
+        </div>
+        <span id="session-timer" style="
+          font-size: 12px;
+          color: rgba(255,255,255,0.3);
+          font-family: 'DM Sans', sans-serif;
+          margin-left: 8px;
+        ">00:00</span>
+      </div>
+    </div>
+
+    <!-- THREE COLUMN LAYOUT -->
+    <div class="three-col">
+
+      <!-- LEFT PANEL -->
+      <div class="left-panel">
+
+        <!-- ORB ZONE -->
+        <div class="orb-zone">
+          <div class="rings-container">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+            <div class="thinking-ring"></div>
+          </div>
+          <div id="orb" class="orb" data-state="idle">
+            <span id="orb-icon" class="orb-icon">🎤</span>
+          </div>
+        </div>
+
+        <!-- WAVEFORM BARS -->
+        <div id="waveform" class="waveform">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+
+
+        <!-- PROFILE PANEL -->
+        <div class="profile-panel">
+          <div class="profile-header">
+            <span class="profile-title" data-i18n="profile_title">YOUR PROFILE</span>
+            <span class="profile-count" id="profile-count">
+              0 of 8
+            </span>
+          </div>
+          <div class="profile-progress-bar">
+            <div class="profile-progress-fill" 
+                 id="profile-progress" 
+                 style="width:0%">
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-field" id="field-name">
+              <div class="field-label" data-i18n="field_name">Name</div>
+              <div class="field-value empty" 
+                   id="value-name" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-skills">
+              <div class="field-label" data-i18n="field_skills">Skills</div>
+              <div class="field-value empty" 
+                   id="value-skills" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-experience">
+              <div class="field-label" data-i18n="field_experience">Experience</div>
+              <div class="field-value empty" 
+                   id="value-experience" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-location">
+              <div class="field-label" data-i18n="field_location">Location</div>
+              <div class="field-value empty" 
+                   id="value-location" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-jobType">
+              <div class="field-label" data-i18n="field_jobType">Job Type</div>
+              <div class="field-value empty" 
+                   id="value-jobType" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-salary">
+              <div class="field-label" data-i18n="field_salary">Salary</div>
+              <div class="field-value empty" 
+                   id="value-salary" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-education">
+              <div class="field-label" data-i18n="field_education">Education</div>
+              <div class="field-value empty" 
+                   id="value-education" data-i18n="not_yet">Not yet</div>
+            </div>
+            <div class="profile-field" id="field-languages">
+              <div class="field-label" data-i18n="field_languages">Languages</div>
+              <div class="field-value empty" 
+                   id="value-languages" data-i18n="not_yet">Not yet</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CENTER COLUMN -->
+      <div class="center-col">
+
+        <!-- CHAT AREA -->
+        <div id="chat-area" class="chat-area">
+          <!-- Bubbles added here by JavaScript -->
+        </div>
+
+        <!-- SLEEP OVERLAY -->
+        <div id="sleep-overlay" class="sleep-overlay hidden"
+             onclick="wakeFromSleep()">
+          <div class="sleep-text" data-i18n="sleep_text">VoiceHire is sleeping</div>
+          <div class="sleep-hint" data-i18n="sleep_hint">
+            Say anything or press Space to continue
+          </div>
+        </div>
+
+        <!-- BOTTOM CONTROLS -->
+        <div class="bottom-controls">
+
+          <!-- CAPTION STRIP CENTER -->
+          <div id="caption-center" class="caption-strip silent">
+            <div class="caption-label" 
+                 id="caption-label-center" data-i18n="label_ai_saying"></div>
+            <div class="caption-text" 
+                 id="caption-text-center" data-i18n="caption_silent_bottom">
+              Tap mic or speak naturally...
+            </div>
+          </div>
+
+          <!-- BUTTONS ROW -->
+          <div class="btn-row">
+            <button id="mic-btn" class="mic-btn" data-i18n="btn_mic_idle">
+              🎤&nbsp;&nbsp;Tap to Speak&nbsp;·&nbsp;or just talk
+            </button>
+            <button id="repeat-btn" class="repeat-btn" 
+                    title="Repeat last message">
+              🔁
+            </button>
+          </div>
+
+          <!-- KEYBOARD HINT -->
+          <div class="keyboard-hint" data-i18n="keyboard_hint">
+            Space = mic &nbsp;·&nbsp; 
+            R = repeat &nbsp;·&nbsp; 
+            Esc = stop
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+        <div class="right-title" data-i18n="current_activity">CURRENT ACTIVITY</div>
+        <div id="right-content" class="right-content">
+
+          <!-- Profile checklist (shown during collection) -->
+          <div id="checklist-panel" class="checklist-panel">
+            <div class="check-item" id="check-name">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_name">Name</div>
+                <div class="check-value" 
+                     id="check-value-name">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-skills">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_skills">Skills</div>
+                <div class="check-value" 
+                     id="check-value-skills">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-experience">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_experience">Experience</div>
+                <div class="check-value" 
+                     id="check-value-experience">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-location">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_location">Location</div>
+                <div class="check-value" 
+                     id="check-value-location">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-jobType">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_jobType">Job Type</div>
+                <div class="check-value" 
+                     id="check-value-jobType">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-salary">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_salary">Salary</div>
+                <div class="check-value" 
+                     id="check-value-salary">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-education">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_education">Education</div>
+                <div class="check-value" 
+                     id="check-value-education">—</div>
+              </div>
+            </div>
+            <div class="check-item" id="check-languages">
+              <span class="check-icon">⬜</span>
+              <div class="check-info">
+                <div class="check-label" data-i18n="field_languages">Languages</div>
+                <div class="check-value" 
+                     id="check-value-languages">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job cards panel (shown during job search) -->
+          <div id="jobs-panel" class="jobs-panel hidden">
+            <!-- Job cards added by JavaScript -->
+          </div>
+
+          <!-- Success panel -->
+          <div id="success-panel" class="success-panel hidden">
+            <!-- Confirmation receipt added by JavaScript -->
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOAD JS FILES IN ORDER -->
+  <script src="js/backend.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/groq.js"></script>
+  <script src="js/extract.js"></script>
+  <script src="js/jobs.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
