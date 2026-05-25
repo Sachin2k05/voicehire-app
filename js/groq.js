@@ -101,20 +101,18 @@ RETURN JSON: {"response": "...", "extracted": {}}`
 
     try {
       const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
+        BACKEND_URL + '/api/jobs/ai',
         {
           method: 'POST',
           signal: controller.signal,
           headers: {
-            'Content-Type':  'application/json',
-            'Authorization': 'Bearer ' + GROQ_API_KEY
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model:           'llama-3.1-8b-instant',
-            messages:        messages,
-            max_tokens:      200,
-            temperature:     0.4,
-            response_format: { type: 'json_object' }
+            messages:     messages.filter(function(m) {
+              return m.role !== 'system'
+            }),
+            systemPrompt: this.buildPrompt()
           })
         }
       )
@@ -234,67 +232,20 @@ RETURN JSON: {"response": "...", "extracted": {}}`
 
     try {
       const res = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
+        BACKEND_URL + '/api/jobs/intent',
         {
-          method: 'POST',
-          signal: controller.signal,
-          headers: {
-            'Content-Type':  'application/json',
-            'Authorization': 'Bearer ' + GROQ_API_KEY
-          },
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model:           'llama-3.1-8b-instant',
-            max_tokens:      60,
-            temperature:     0.1,
-            response_format: { type: 'json_object' },
-            messages: [
-              {
-                role: 'system',
-                content:
-                  'You classify job-seeker intent. ' +
-                  'Context: ' + context + '. ' +
-                  'Return ONLY JSON: ' +
-                  '{"intent":"X","reason":"Y"} ' +
-                  'where X is exactly one of: ' +
-                  'APPLY SKIP MORE_INFO QUESTION OTHER. ' +
-                  'APPLY = wants to apply for this job. ' +
-                  'SKIP = wants next job or not interested. ' +
-                  'MORE_INFO = wants details about job. ' +
-                  'QUESTION = asking something. ' +
-                  'OTHER = something else. ' +
-                  'Understand ANY natural language phrasing. ' +
-                  'No word lists. Use your intelligence.'
-              },
-              {
-                role: 'user',
-                content: 'User said: "' + userText + '"'
-              }
-            ]
+            userText: userText,
+            context:  context
           })
         }
       )
       clearTimeout(timeout)
 
       const data = await res.json()
-
-      if (!res.ok) {
-        console.error('[Intent] API error:', data.error)
-        return { intent: 'QUESTION', reason: 'api error' }
-      }
-
-      const raw = data?.choices?.[0]
-                      ?.message?.content?.trim()
-      console.log('[Intent] Raw:', raw)
-
-      try {
-        const parsed = JSON.parse(raw)
-        console.log('[Intent]', parsed.intent,
-          '—', parsed.reason)
-        return parsed
-      } catch(e) {
-        console.warn('[Intent] Parse failed:', raw)
-        return { intent: 'QUESTION', reason: 'parse fail' }
-      }
+      return data.intent || { intent: 'OTHER' }
 
     } catch(err) {
       clearTimeout(timeout)
